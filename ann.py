@@ -19,6 +19,8 @@ params = {'legend.fontsize': 'small',
          'ytick.labelsize':'medium'}
 plt.rcParams.update(params)
 
+from skimage.io import imread
+
 
 # --------------
 # Describe data
@@ -100,4 +102,79 @@ plt.pie(target_percentage, explode=explode_tp, labels=labels_tp,
 plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.title('Percentage of patchs show IDC')
 plt.legend()
+plt.show()
+
+# Show samples of healthy and cancer patches
+data.target = data.target.astype(np.int)
+
+pos_selection = np.random.choice(data[data.target==1].index.values, 
+                                 size=50, replace=False)
+neg_selection = np.random.choice(data[data.target==0].index.values, 
+                                 size=50, replace=False)
+
+# Cancer patches
+fig, ax = plt.subplots(5, 10, figsize=(20, 10))
+
+for n in range(5):
+    for m in range(10):
+        idx = pos_selection[m + 10*n]
+        image = imread(data.loc[idx, "path"])
+        ax[n,m].imshow(image)
+        ax[n,m].grid(False)
+        
+fig.suptitle("Cancer patches", fontsize=20)
+plt.show()
+
+# Healthy patches
+fig, ax = plt.subplots(5, 10,figsize=(20, 10))
+
+for n in range(5):
+    for m in range(10):
+        idx = neg_selection[m + 10*n]
+        image = imread(data.loc[idx, "path"])
+        ax[n,m].imshow(image)
+        ax[n,m].grid(False)
+        
+fig.suptitle("Healthy patches", fontsize=20)
+plt.show()
+
+# Show cancer patches by coordinates
+def get_cancer_dataframe(patient_id, cancer_id):
+    path = base_path + '/' + patient_id + '/' + cancer_id
+    files = os.listdir(path)
+    dataframe = pd.DataFrame(files, columns=["filename"])
+    path_names = path + "/" + dataframe.filename.values
+    dataframe = dataframe.filename.str.rsplit("_", n=4, expand=True)
+    dataframe.loc[:, "target"] = np.int(cancer_id)
+    dataframe.loc[:, "path"] = path_names
+    dataframe = dataframe.drop([0, 1, 4], axis=1)
+    dataframe = dataframe.rename({2: "x", 3: "y"}, axis=1)
+    dataframe.loc[:, "x"] = dataframe.loc[:,"x"].str.replace("x", "", case=False).astype(np.int)
+    dataframe.loc[:, "y"] = dataframe.loc[:,"y"].str.replace("y", "", case=False).astype(np.int)
+    return dataframe
+
+def get_patient_dataframe(patient_id):
+    df_0 = get_cancer_dataframe(patient_id, "0")
+    df_1 = get_cancer_dataframe(patient_id, "1")
+    patient_df = df_0.append(df_1)
+    return patient_df
+
+example = get_patient_dataframe(data.patient_id.values[0])
+print(example.head())
+
+fig, ax = plt.subplots(3, 5, figsize=(50, 30))
+
+patient_ids = data.patient_id.unique()
+
+for n in range(3):
+    for m in range(5):
+        patient_id = patient_ids[m + 5*n]
+        example_df = get_patient_dataframe(patient_id)
+        
+        ax[n,m].scatter(example_df.x.values, example_df.y.values, 
+                        c=example_df.target.values, cmap="coolwarm", s=20);
+        ax[n,m].set_title("patient " + patient_id)
+        ax[n,m].set_xlabel("y coord")
+        ax[n,m].set_ylabel("x coord")
+        
 plt.show()
