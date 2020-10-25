@@ -178,3 +178,61 @@ for n in range(3):
         ax[n,m].set_ylabel("x coord")
         
 plt.show()
+
+# Show cancer patches on full images
+def visualise_breast_tissue(patient_id, pred_df=None):
+    example_df = get_patient_dataframe(patient_id)
+    max_point = [example_df.y.max()-1, example_df.x.max()-1]
+    grid = 255*np.ones(shape = (max_point[0] + 50, max_point[1] + 50, 3)).astype(np.uint8)
+    mask = 255*np.ones(shape = (max_point[0] + 50, max_point[1] + 50, 3)).astype(np.uint8)
+    if pred_df is not None:
+        patient_df = pred_df[pred_df.patient_id == patient_id].copy()
+    mask_proba = np.zeros(shape = (max_point[0] + 50, max_point[1] + 50, 1)).astype(np.float)
+    
+    broken_patches = []
+    for n in range(len(example_df)):
+        try:
+            image = imread(example_df.path.values[n])
+            
+            target = example_df.target.values[n]
+            
+            x_coord = np.int(example_df.x.values[n])
+            y_coord = np.int(example_df.y.values[n])
+            x_start = x_coord - 1
+            y_start = y_coord - 1
+            x_end = x_start + 50
+            y_end = y_start + 50
+
+            grid[y_start:y_end, x_start:x_end] = image
+            if target == 1:
+                mask[y_start:y_end, x_start:x_end, 0] = 250
+                mask[y_start:y_end, x_start:x_end, 1] = 0
+                mask[y_start:y_end, x_start:x_end, 2] = 0
+            if pred_df is not None:
+                
+                proba = patient_df[
+                    (patient_df.x==x_coord) & (patient_df.y==y_coord)].proba
+                mask_proba[y_start:y_end, x_start:x_end, 0] = np.float(proba)
+
+        except ValueError:
+            broken_patches.append(example_df.path.values[n])
+    
+    
+    return grid, mask, broken_patches, mask_proba
+
+patient_id = "14154"
+grid, mask, broken_patches,_ = visualise_breast_tissue(patient_id)
+
+fig, ax = plt.subplots(1, 2,figsize=(20, 10))
+ax[0].imshow(grid, alpha=0.5)
+ax[1].imshow(mask, alpha=0.8)
+ax[1].imshow(grid, alpha=0.6)
+ax[0].grid(False)
+ax[1].grid(False)
+for m in range(2):
+    ax[m].set_xlabel("y-coord")
+    ax[m].set_ylabel("y-coord")
+ax[0].set_title("Breast tissue slice of patient: " + patient_id)
+ax[1].set_title("Cancer tissue colored red \n of patient: " + patient_id)
+
+plt.show()
