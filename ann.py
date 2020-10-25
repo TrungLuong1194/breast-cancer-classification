@@ -78,6 +78,7 @@ plt.xlabel("Number of patches")
 plt.ylabel("Frequency")
 plt.legend()
 plt.grid()
+plt.savefig('Number_of_patches_per_patient.png')
 plt.show()
 
 # Percentage of a patient is covered by IDC
@@ -90,6 +91,7 @@ plt.xlabel("% of patches with IDC")
 plt.ylabel("Frequency")
 plt.legend()
 plt.grid()
+plt.savefig('Percentage_of_a_patient_is_covered_by_IDC.png')
 plt.show()
 
 # Percentage of patchs show IDC
@@ -102,6 +104,7 @@ plt.pie(target_percentage, explode=explode_tp, labels=labels_tp,
 plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.title('Percentage of patchs show IDC')
 plt.legend()
+plt.savefig('Percentage_of_patchs_show_IDC.png')
 plt.show()
 
 # Show samples of healthy and cancer patches
@@ -123,6 +126,7 @@ for n in range(5):
         ax[n,m].grid(False)
         
 fig.suptitle("Cancer patches", fontsize=20)
+fig.savefig('Cancer_patches.png')
 plt.show()
 
 # Healthy patches
@@ -136,6 +140,7 @@ for n in range(5):
         ax[n,m].grid(False)
         
 fig.suptitle("Healthy patches", fontsize=20)
+fig.savefig('Healthy_patches.png')
 plt.show()
 
 # Show cancer patches by coordinates
@@ -176,7 +181,8 @@ for n in range(3):
         ax[n,m].set_title("patient " + patient_id)
         ax[n,m].set_xlabel("y coord")
         ax[n,m].set_ylabel("x coord")
-        
+
+fig.savefig('Cancer_patches_by_coordinates.png')
 plt.show()
 
 # Show cancer patches on full images
@@ -235,4 +241,5 @@ for m in range(2):
 ax[0].set_title("Breast tissue slice of patient: " + patient_id)
 ax[1].set_title("Cancer tissue colored red \n of patient: " + patient_id)
 
+fig.savefig('Cancer_patches_on_full_images.png')
 plt.show()
