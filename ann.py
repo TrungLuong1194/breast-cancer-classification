@@ -20,11 +20,13 @@ params = {'legend.fontsize': 'small',
 plt.rcParams.update(params)
 
 from skimage.io import imread
+from sklearn.model_selection import train_test_split
+import cv2
 
 
-# --------------
+# ----------------------------------------------------------------------------
 # Describe data
-# --------------
+# ----------------------------------------------------------------------------
 
 base_path = '../dataset'
 folders = os.listdir(base_path)
@@ -64,9 +66,9 @@ print('- Number of images: ' + str(total_images))
 print('- Data Samples:\n')
 print(data.head(10))
 
-# --------------
+# ----------------------------------------------------------------------------
 # Data analysis
-# --------------       
+# ----------------------------------------------------------------------------   
 
 # Number of patches/patient
 patch_each_patient = data.groupby('patient_id').target.size()
@@ -229,7 +231,7 @@ def visualise_breast_tissue(patient_id, pred_df=None):
 patient_id = "14154"
 grid, mask, broken_patches,_ = visualise_breast_tissue(patient_id)
 
-fig, ax = plt.subplots(1, 2,figsize=(20, 10))
+fig, ax = plt.subplots(1, 2, figsize=(20, 10))
 ax[0].imshow(grid, alpha=0.5)
 ax[1].imshow(mask, alpha=0.8)
 ax[1].imshow(grid, alpha=0.6)
@@ -243,3 +245,70 @@ ax[1].set_title("Cancer tissue colored red \n of patient: " + patient_id)
 
 fig.savefig('ann_images/Cancer_patches_on_full_images.png')
 plt.show()
+
+# ----------------------------------------------------------------------------
+# Setting the training set, test set
+# ----------------------------------------------------------------------------
+
+print(data.head())
+data.loc[:, "target"] = data.target.astype(np.str)
+print(data.info())
+
+# Split the training patient_ids and test patient_ids
+train_ids, test_ids = train_test_split(patient_ids, test_size=0.25, 
+                                       random_state=0)
+
+print('train_ids/test_ids: ' + str(len(train_ids)) + '/' + str(len(test_ids)))
+
+# Create the training data and test data
+train_df = data.loc[data.patient_id.isin(train_ids),:]
+test_df = data.loc[data.patient_id.isin(test_ids),:]
+
+def extract_coords(df):
+    coord = df.path.str.rsplit("_", n=4, expand=True)
+    coord = coord.drop([0, 1, 4], axis=1)
+    coord = coord.rename({2: "x", 3: "y"}, axis=1)
+    coord.loc[:, "x"] = coord.loc[:,"x"].str.replace("x", "", case=False).astype(np.int)
+    coord.loc[:, "y"] = coord.loc[:,"y"].str.replace("y", "", case=False).astype(np.int)
+    df.loc[:, "x"] = coord.x.values
+    df.loc[:, "y"] = coord.y.values
+    return df
+
+train_df = extract_coords(train_df)
+test_df = extract_coords(test_df)
+
+# Target distributions
+target_0 = [train_df.target.value_counts()[0], test_df.target.value_counts()[0]]
+target_1 = [train_df.target.value_counts()[1], test_df.target.value_counts()[1]]
+
+ind = np.arange(2) 
+width = 0.35       
+plt.bar(ind, target_0, width, label='0')
+plt.bar(ind + width, target_1, width, label='1')
+plt.xlabel('Target')
+plt.ylabel('Count')
+plt.title('Target distributions')
+plt.xticks(ind + width / 2, ('Training data', 'Test data'))
+plt.legend(loc='best')
+
+plt.savefig('ann_images/Target_distributions.png')
+plt.show()
+
+
+# Shape of images
+IMG_WIDTH = 50
+IMG_HEIGHT = 50
+IMG_CHANNELS = 3
+
+# Convert image to array (RGB)
+def convert_image_to_array(file_paths):
+    images_data = np.empty((file_paths.shape[0], IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS), dtype=np.uint8)
+    for index, file in enumerate(file_paths):
+        img = cv2.imread(file) 
+        res = cv2.resize(img, dsize=(IMG_WIDTH, IMG_HEIGHT), interpolation=cv2.INTER_CUBIC)
+        images_data[index] = res
+        
+    return images_data
+
+X_train = np.array(convert_image_to_array(train_df.path))
+X_test = np.array(convert_image_to_array(test_df.path))
