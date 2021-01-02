@@ -1,4 +1,4 @@
-# Master-s-graduation-project
+# Masters-graduation-project
 
 ## Link dataset
 https://www.kaggle.com/paultimothymooney/breast-histopathology-images
