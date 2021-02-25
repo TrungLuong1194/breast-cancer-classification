@@ -46,5 +46,5 @@ https://en.wikipedia.org/wiki/Capsule_neural_network
 | Accuracy     | 84.25% | 88.52% | 87.41%  |
 | F1 score     | 0.70   | 0.81   | 0.79    |
 | Recall score | 0.64   | 0.86   | 0.81    |
-| Epoch        | 20     | 25     | 25      |
-| Epoch Time   | ~21s   | ~27s   | ~10m    |
+| Epoch Number | 20     | 25     | 25      |
+| Time/Epoch   | ~21s   | ~27s   | ~10m    |
