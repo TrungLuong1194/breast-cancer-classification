@@ -8,8 +8,6 @@ https://www.kaggle.com/paultimothymooney/breast-histopathology-images
 
 - main
 	- CNN.ipynb
-	- CapsNet.ipynb
-	- MLP.ipynb
 	- Process_Data.ipynb
 - dataset
 	- 8863/[0-1]
@@ -27,24 +25,6 @@ https://www.kaggle.com/paultimothymooney/breast-histopathology-images
 
 ## Algorithms applied
 
-- Multilayer perceptron
-
-https://en.wikipedia.org/wiki/Multilayer_perceptron
-
 - Convolutional neural network
 
 https://en.wikipedia.org/wiki/Convolutional_neural_network
-
-- Capsule neural network
-
-https://en.wikipedia.org/wiki/Capsule_neural_network
-
-## Result
-
-|              | MLP    | CNN    | CapsNet |
-|--------------|--------|--------|---------|
-| Accuracy     | 84.25% | 88.52% | 87.41%  |
-| F1 score     | 0.70   | 0.81   | 0.79    |
-| Recall score | 0.64   | 0.86   | 0.81    |
-| Epoch Number | 20     | 25     | 25      |
-| Time/Epoch   | ~21s   | ~27s   | ~10m    |
