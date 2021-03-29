@@ -13,14 +13,17 @@ https://www.kaggle.com/paultimothymooney/breast-histopathology-images
 	- 8863/[0-1]
 	- 10300/[0-1]
 	- ...
-- data_batch_train
+- train_data
 	- X_train_1.hdf5
 	- ...
-- data_batch_test
+- test_data
 	- X_test_1.hdf5
 	- ...
-- data_batch_valid
+- valid_data
 	- X_valid_1.hdf5
+	- ...
+- train_data_aug
+	- X_train_aug_1.hdf5
 	- ...
 
 ## Algorithms applied
