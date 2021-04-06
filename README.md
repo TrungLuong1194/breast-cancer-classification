@@ -22,9 +22,6 @@ https://www.kaggle.com/paultimothymooney/breast-histopathology-images
 - valid_data
 	- X_valid_1.hdf5
 	- ...
-- train_data_aug
-	- X_train_aug_1.hdf5
-	- ...
 
 ## Algorithms applied
 
