@@ -28,3 +28,10 @@ https://www.kaggle.com/paultimothymooney/breast-histopathology-images
 - Convolutional neural network
 
 https://en.wikipedia.org/wiki/Convolutional_neural_network
+
+## Techniques applied
+
+- Augmentation
+- SMOTE
+
+https://en.wikipedia.org/wiki/Oversampling_and_undersampling_in_data_analysis
